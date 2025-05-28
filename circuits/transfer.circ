@@ -1,0 +1,14 @@
+name simple_transfer
+input alice 10
+input bob 5
+output alice 5
+output bob 10
+sender alice
+receiver bob
+amount 5
+const one 1
+add one one two
+sub alice one temp
+mul temp one result
+hash result hash_output
+eq hash_output result is_equal

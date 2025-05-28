@@ -1,0 +1,16 @@
+name example_circuit
+input a 3
+input b 5
+input c 7
+input d 2
+output result 16
+output intermediate 10
+const sixteen 16
+const ten 10
+add a b sum_ab
+add c d sum_cd
+mul sum_ab sum_cd mul_ab_cd
+sub mul_ab_cd a result
+eq result sixteen result_check
+add sum_ab sum_cd intermediate
+eq intermediate ten intermediate_check
