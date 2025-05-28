@@ -1,0 +1,7 @@
+name equality_test
+input x 5
+input y 10
+const zero 0
+eq x y diff
+mul diff diff squared_diff
+eq squared_diff zero check

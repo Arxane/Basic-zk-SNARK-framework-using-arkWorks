@@ -1,16 +1,13 @@
-name example_circuit
-input a 3
-input b 5
-input c 7
-input d 2
+name simple_arithmetic
+input x 5
+input y 3
 output result 16
-output intermediate 10
+const one 1
+const two 2
 const sixteen 16
-const ten 10
-add a b sum_ab
-add c d sum_cd
-mul sum_ab sum_cd mul_ab_cd
-sub mul_ab_cd a result
-eq result sixteen result_check
-add sum_ab sum_cd intermediate
-eq intermediate ten intermediate_check
+
+mul x two x_times_two
+mul y two y_times_two
+add x_times_two y_times_two sum
+sub sum two result
+eq result sixteen check

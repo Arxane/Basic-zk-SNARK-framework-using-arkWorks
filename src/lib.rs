@@ -158,10 +158,17 @@ impl Circuit {
                     let a_idx = get_index(a, &mut var_map, &mut next_r1cs_idx);
                     let b_idx = get_index(b, &mut var_map, &mut next_r1cs_idx);
                     let out_idx = get_index(out, &mut var_map, &mut next_r1cs_idx);
+                    // First constraint: a - b = diff
                     temp_constraints.push(_R1CSConstraintInternal {
                         a: vec![(a_idx, Fr::one()), (b_idx, Fr::one().neg())].into_iter().collect(),
                         b: vec![(var_map["1"], Fr::one())].into_iter().collect(),
                         c: vec![(out_idx, Fr::one())].into_iter().collect(),
+                    });
+                    // Second constraint: diff * diff = 0 (enforces diff = 0)
+                    temp_constraints.push(_R1CSConstraintInternal {
+                        a: vec![(out_idx, Fr::one())].into_iter().collect(),
+                        b: vec![(out_idx, Fr::one())].into_iter().collect(),
+                        c: vec![(var_map["1"], Fr::zero())].into_iter().collect(),
                     });
                 }
                 Gate::Hash(input, output) => {
@@ -268,10 +275,15 @@ impl Circuit {
                     let b_val = wire_values_by_name.get(b_name.as_str()).ok_or_else(|| format!("Var {} not found", b_name))?;
                     wire_values_by_name.insert(c_name.clone(), *a_val - *b_val);
                 }
-                Gate::Eq(a_name, b_name, out_name ) => {
+                Gate::Eq(a_name, b_name, out_name) => {
                     let a_val = wire_values_by_name.get(a_name.as_str()).ok_or_else(|| format!("Var {} not found", a_name))?;
                     let b_val = wire_values_by_name.get(b_name.as_str()).ok_or_else(|| format!("Var {} not found", b_name))?;
-                    wire_values_by_name.insert(out_name.clone(), *a_val - *b_val);
+                    // For equality to hold, a_val must equal b_val
+                    if *a_val != *b_val {
+                        return Err(format!("Equality constraint failed: {} ({:?}) != {} ({:?})", 
+                            a_name, a_val, b_name, b_val));
+                    }
+                    wire_values_by_name.insert(out_name.clone(), Fr::zero());
                 }
                 Gate::Hash(in_name, out_name) => {
                     let in_val = wire_values_by_name.get(in_name.as_str()).ok_or_else(|| format!("Var {} not found", in_name))?;
