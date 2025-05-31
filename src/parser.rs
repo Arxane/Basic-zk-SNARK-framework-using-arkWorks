@@ -1,6 +1,7 @@
+//No AI assistance was used to write this parser file(unlike main.rs)
 use std::fs; //for reading the file
 use std::collections::HashMap; //for storing inputs and outputs
-use crate::{Gate, Circuit};
+use crate::{Gate, Circuit}; 
 
 pub fn parse_circuit(file_path: &str) -> Result<Circuit, std::io::Error> {
     // Open the file and wrap it with a buf reader

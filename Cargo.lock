@@ -984,6 +984,7 @@ dependencies = [
  "ark-relations",
  "ark-std",
  "rand",
+ "sha2",
  "tracing",
  "tracing-subscriber 0.3.19",
 ]

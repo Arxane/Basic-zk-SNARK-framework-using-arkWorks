@@ -21,3 +21,4 @@ rand = "0.8.5"
 # Add tracing crates directly for your main.rs subscriber setup
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+sha2 = "0.10.9"

@@ -1,13 +1,21 @@
 name simple_arithmetic
 input x 5
 input y 3
+input transfer_amount_public 5
 output result 16
+output check 1
+output check2 1
 const one 1
 const two 2
 const sixteen 16
+const fourteen 14
 
 mul x two x_times_two
 mul y two y_times_two
 add x_times_two y_times_two sum
 sub sum two result
-eq result sixteen check
+sub sum sixteen diff1
+mul diff1 diff1 check
+
+sub result fourteen diff2
+mul diff2 diff2 check2
