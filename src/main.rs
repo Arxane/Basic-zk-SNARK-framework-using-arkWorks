@@ -5,7 +5,40 @@ use zk_framework::{Circuit, ProvingKey, VerifyingKey, parse_circuit, setup, prov
 use ark_bls12_381::Fr; // For Fr type if used directly
 use ark_ff::One;
 
-fn main() {
+mod mempool;
+mod api;
+
+use std::sync::Arc;
+use axum::{
+    routing::get,
+    Router,
+};
+use tower_http::cors::{CorsLayer, Any};
+
+#[tokio::main]
+async fn main() {
+    // Initialize tracing
+    tracing_subscriber::fmt::init();
+
+    // Create mempool instance
+    let mempool = Arc::new(mempool::Mempool::new(1000));
+
+    // Build our application with a route
+    let app = api::create_router(mempool)
+        .layer(
+            CorsLayer::new()
+                .allow_origin(Any)
+                .allow_methods(Any)
+                .allow_headers(Any),
+        );
+
+    // Run it
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
+    println!("Server running on http://127.0.0.1:3000");
+    axum::serve(listener, app).await.unwrap();
+}
+
+fn main_old() {
     //setting up logging
     use tracing_subscriber::{EnvFilter, FmtSubscriber}; 
     let subscriber = FmtSubscriber::builder() 
