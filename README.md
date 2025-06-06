@@ -1,23 +1,131 @@
-# zk-Framework
+# Zero-Knowledge Circuit Framework
 
-A zero-knowledge proof framework built using ArkWorks, implementing zk-SNARKs for arithmetic circuit verification.
+A Rust-based framework for creating and verifying zero-knowledge proofs using Groth16 zk-SNARKs. This framework allows you to define arithmetic circuits and generate/verify zero-knowledge proofs for them.
+
+## Personal Note
+
+This project was created as a learning exercise to:
+- Practice and improve my Rust programming skills
+- Explore the fascinating world of cryptography and zero-knowledge proofs
+- Understand the practical implementation of zk-SNARKs
+- Learn about circuit-based computation and constraint systems
+
+While the implementation may not be production-ready, it serves as a good starting point for understanding zero-knowledge proofs and their implementation in Rust. Feel free to use this as a reference or learning resource!
+
+## Features
+
+- Circuit definition using a simple text-based format
+- Support for basic arithmetic operations (add, subtract, multiply)
+- Support for boolean operations (XOR)
+- Support for equality checks
+- Support for constant values
+- Groth16 zk-SNARK proof generation and verification
+- R1CS (Rank-1 Constraint System) conversion
+- Witness computation
+
+## Circuit File Format
+
+Circuits are defined in a simple text format. Here's an example:
+
+```
+name simple_arithmetic
+input x 5
+input y 3
+input transfer_amount_public 5
+output result 16
+output check 1
+const one 1
+const two 2
+const sixteen 16
+
+add x y sum
+add sum two result
+sub result sixteen diff
+mul diff diff check
+```
+
+### Supported Operations
+
+- `input <name> <value>` - Define an input variable
+- `output <name> <value>` - Define an expected output
+- `const <name> <value>` - Define a constant
+- `add <a> <b> <result>` - Addition: result = a + b
+- `sub <a> <b> <result>` - Subtraction: result = a - b
+- `mul <a> <b> <result>` - Multiplication: result = a * b
+- `xor <a> <b> <result>` - XOR operation (inputs must be 0 or 1)
+- `eq <a> <b> <result>` - Equality check: result = 1 if a == b, 0 otherwise
+
+## Usage
+
+1. Create a circuit file (e.g., `circuit.txt`) using the format described above
+2. Run the program:
+```bash
+cargo run -- circuit.txt
+```
+
+The program will:
+1. Parse the circuit
+2. Convert it to an R1CS system
+3. Generate Groth16 proving and verifying keys
+4. Compute the witness
+5. Generate a zero-knowledge proof
+6. Verify the proof
+
+## Example Output
+
+```
+Parsing circuit from: circuit.txt
+Parsed Circuit: "simple_arithmetic"
+Converting circuit to R1CS system...
+Circuit parsed: simple_arithmetic (4 constraints, 6 variables)
+Public input names (excluding implicit '1'): ["x", "y", "transfer_amount_public"]
+Generating Groth16 proving and verifying keys (setup)...
+Keys generated successfully.
+Computing witness for the circuit instance...
+Witness computed with 6 assignments.
+Generating Groth16 proof...
+Proof generated.
+Verifying proof with public inputs: [...]
+Verification Result: true
+Proof is VALID!
+```
+
+## Dependencies
+
+- ark-bls12-381
+- ark-groth16
+- ark-ff
+- ark-ec
+- ark-relations
+- ark-std
+- ark-crypto-primitives
+- ark-serialize
+
+## Project Structure
+
+- `src/main.rs` - Main program entry point
+- `src/lib.rs` - Core library functionality
+- `src/parser.rs` - Circuit file parsing
+- `circuit.txt` - Example valid circuit
+- `invalid_circuit.txt` - Example invalid circuit
+
+## Building
+
+```bash
+cargo build
+```
+
+## Running Tests
+
+```bash
+cargo test
+```
 
 ## Overview
 
 This project implements a zero-knowledge proof system using zk-SNARKs (Zero-Knowledge Succinct Non-Interactive Arguments of Knowledge). It allows users to define arithmetic circuits and generate proofs that verify the correctness of computations without revealing the inputs.
 
 The framework is built on top of [ArkWorks](https://github.com/arkworks-rs), a Rust library for zero-knowledge proof systems, specifically using the Groth16 protocol.
-
-## Features
-
-- Arithmetic circuit definition and parsing
-- Witness computation
-- Proof generation using Groth16 protocol
-- Proof verification
-- Support for basic arithmetic operations (add, mul, sub)
-- Equality constraints
-- Constant definitions
-- Input/output variable handling
 
 ## Prerequisites
 
@@ -35,52 +143,6 @@ cd zk-framework
 2. Build the project:
 ```bash
 cargo build
-```
-
-## Usage
-
-### Defining a Circuit
-
-Circuits are defined in a text file using a simple domain-specific language. Here's an example:
-
-```
-name simple_arithmetic
-input x 5
-input y 3
-output result 16
-const one 1
-const two 2
-const sixteen 16
-
-mul x two x_times_two
-mul y two y_times_two
-add x_times_two y_times_two sum
-sub sum two result
-eq sum sixteen check
-```
-
-#### Circuit Syntax
-
-- `name <circuit_name>`: Defines the circuit name
-- `input <var_name> <value>`: Declares an input variable
-- `output <var_name> <value>`: Declares an output variable
-- `const <name> <value>`: Defines a constant
-- `add <a> <b> <result>`: Addition operation
-- `mul <a> <b> <result>`: Multiplication operation
-- `sub <a> <b> <result>`: Subtraction operation
-- `eq <a> <b> <result>`: Equality check
-
-### Running the Framework
-
-To run a circuit:
-
-```bash
-cargo run -- <path_to_circuit_file>
-```
-
-For example:
-```bash
-cargo run -- circuit.txt
 ```
 
 ## How It Works
