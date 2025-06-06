@@ -12,6 +12,15 @@ This project was created as a learning exercise to:
 
 While the implementation may not be production-ready, it serves as a good starting point for understanding zero-knowledge proofs and their implementation in Rust. Feel free to use this as a reference or learning resource!
 
+## Note on Legacy Code
+
+The codebase contains some legacy code and terminology from its initial development as an asset transfer system. You may notice:
+- References to "transfer", "sender", "receiver" in variable names and comments
+- Functions related to balance checking and transfers
+- Some unused fields in structs
+
+These are remnants of the original implementation and are not used in the current circuit-based functionality. They can be safely ignored or removed in future refactoring.
+
 ## Features
 
 - Circuit definition using a simple text-based format
