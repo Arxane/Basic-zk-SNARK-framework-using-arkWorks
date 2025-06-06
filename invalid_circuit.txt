@@ -1,0 +1,16 @@
+name invalid_arithmetic
+input x 5
+input y 3
+input transfer_amount_public 5
+output result 16
+output check 1
+const one 1
+const two 2
+const sixteen 16
+const fourteen 14
+
+add x y sum
+add sum two result  # This will be 10, contradicting the output declaration of 16
+
+sub result sixteen diff
+mul diff diff check

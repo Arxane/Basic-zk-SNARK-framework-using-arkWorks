@@ -1,44 +1,17 @@
 // This implementation was developed with assistance from AI assistance
 
-use std::collections::HashMap; //Keep for var_index if needed, but r1cs_system will hold it
-use zk_framework::{Circuit, ProvingKey, VerifyingKey, parse_circuit, setup, prove, verify}; //Import new items
-use ark_bls12_381::Fr; // For Fr type if used directly
+use std::collections::HashMap;
+use zk_framework::{Circuit, ProvingKey, VerifyingKey, parse_circuit, setup, prove, verify};
+use ark_bls12_381::Fr;
 use ark_ff::One;
 
-mod mempool;
-mod api;
 
-use std::sync::Arc;
-use axum::{
-    routing::get,
-    Router,
-};
-use tower_http::cors::{CorsLayer, Any};
-
-#[tokio::main]
-async fn main() {
-    // Initialize tracing
-    tracing_subscriber::fmt::init();
-
-    // Create mempool instance
-    let mempool = Arc::new(mempool::Mempool::new(1000));
-
-    // Build our application with a route
-    let app = api::create_router(mempool)
-        .layer(
-            CorsLayer::new()
-                .allow_origin(Any)
-                .allow_methods(Any)
-                .allow_headers(Any),
-        );
-
-    // Run it
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
-    println!("Server running on http://127.0.0.1:3000");
-    axum::serve(listener, app).await.unwrap();
+fn main() {
+    circuit_main();
 }
 
-fn main_old() {
+#[allow(dead_code)]
+fn circuit_main() {
     //setting up logging
     use tracing_subscriber::{EnvFilter, FmtSubscriber}; 
     let subscriber = FmtSubscriber::builder() 
@@ -67,7 +40,6 @@ fn main_old() {
         circuit.name, r1cs.raw_constraints.len(), r1cs.num_variables);
     println!("Public input names (excluding implicit '1'): {:?}", r1cs.public_input_names);
 
-
     println!("Generating Groth16 proving and verifying keys (setup)...");
     //generate cryptographic keys using Groth16
     let (pk, vk): (ProvingKey, VerifyingKey) = setup(&r1cs).expect("Failed to generate keys (setup)");
@@ -78,7 +50,6 @@ fn main_old() {
     let witness_by_idx: HashMap<usize, Fr> = circuit.compute_witness(&r1cs.var_map)
         .expect("Failed to compute witness");
     println!("Witness computed with {} assignments.", witness_by_idx.len());
-
 
     println!("Generating Groth16 proof...");
     //Generate zero knowledge proof 
@@ -119,7 +90,6 @@ fn main_old() {
         println!("Proof is INVALID!");
     }
 }
-
 
 /* Code was wriiten mainly using other Groth16 implementation examples,and the documentation of the zk_framework crate. */
 /* Debugging was done mainly by checking the logs and the values of the variables. */

@@ -1,6 +1,7 @@
 // No AI assistance used for this implementation (unlike the main.rs file)
 use std::collections::HashMap;
 use std::ops::Neg;
+pub mod proof;
 // Arkworks imports - v0.5.0
 use ark_bls12_381::{Bls12_381, Fr};
 use ark_ff::{One, Zero};
@@ -14,7 +15,6 @@ use ark_groth16::{
     ProvingKey as ArkGroth16ProvingKey,
     VerifyingKey as ArkGroth16VerifyingKey,
     Proof as ArkGroth16Proof,
-    r1cs_to_qap::LibsnarkReduction,
 };
 use ark_crypto_primitives::snark::SNARK;
 use ark_std::rand::rngs::OsRng;
@@ -378,6 +378,12 @@ pub struct ProvingKey(ArkGroth16ProvingKey<Bls12_381>);
 #[derive(Clone)]
 pub struct VerifyingKey(ArkGroth16VerifyingKey<Bls12_381>);
 
+impl VerifyingKey {
+    pub fn inner(&self) -> &ArkGroth16VerifyingKey<Bls12_381> {
+        &self.0
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Proof(ArkGroth16Proof<Bls12_381>);
 
@@ -451,17 +457,14 @@ impl ConstraintSynthesizer<Fr> for Groth16CircuitAdapter {
 }
 //setup and initialize proving key and verifying key
 pub fn setup(r1cs_system: &R1CSSystem) -> Result<(ProvingKey, VerifyingKey), SynthesisError> {
-    let mut rng = OsRng;
-    let circuit_for_setup = Groth16CircuitAdapter {
+    let rng = &mut OsRng;
+    let circuit = Groth16CircuitAdapter {
         r1cs_system: r1cs_system.clone(),
-        witness_assignment: None, // No witness values needed for setup
+        witness_assignment: None,
     };
 
-    // Using CircuitSpecificSetupSNARK trait method
-    let (pk_internal, vk_internal) =
-        Groth16::<Bls12_381, LibsnarkReduction>::circuit_specific_setup(circuit_for_setup, &mut rng)?;
-    
-    Ok((ProvingKey(pk_internal), VerifyingKey(vk_internal)))
+    let (pk, vk) = Groth16::<Bls12_381>::circuit_specific_setup(circuit, rng)?;
+    Ok((ProvingKey(pk), VerifyingKey(vk)))
 }
 // to generate the proof
 pub fn prove(
@@ -469,14 +472,14 @@ pub fn prove(
     pk: &ProvingKey,
     witness_by_original_idx: HashMap<usize, Fr>,
 ) -> Result<Proof, SynthesisError> {
-    let mut rng = OsRng;
-    let circuit_for_proving = Groth16CircuitAdapter {
+    let rng = &mut OsRng;
+    let circuit = Groth16CircuitAdapter {
         r1cs_system: r1cs_system.clone(),
-        witness_assignment: Some(witness_by_original_idx), // Full witness for proving
+        witness_assignment: Some(witness_by_original_idx),
     };
 
-    let proof_internal = Groth16::<Bls12_381, LibsnarkReduction>::prove(&pk.0, circuit_for_proving, &mut rng)?;
-    Ok(Proof(proof_internal))
+    let proof = Groth16::<Bls12_381>::prove(&pk.0, circuit, rng)?;
+    Ok(Proof(proof))
 }
 //function to use the verifying key
 pub fn verify(
@@ -484,8 +487,9 @@ pub fn verify(
     proof: &Proof,
     public_inputs_ordered: &[Fr],
 ) -> Result<bool, SynthesisError> {
-    let pvk_internal = Groth16::<Bls12_381, LibsnarkReduction>::process_vk(&vk.0)?;
-    Groth16::<Bls12_381, LibsnarkReduction>::verify_with_processed_vk(&pvk_internal, public_inputs_ordered, &proof.0)
+    let processed_vk = Groth16::<Bls12_381>::process_vk(vk.inner())?;
+    let result = Groth16::<Bls12_381>::verify_with_processed_vk(&processed_vk, public_inputs_ordered, &proof.0)?;
+    Ok(result)
 }
 
 #[cfg(test)]
