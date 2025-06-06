@@ -1,7 +1,6 @@
 // No AI assistance used for this implementation (unlike the main.rs file)
 use std::collections::HashMap;
 use std::ops::Neg;
-pub mod proof;
 // Arkworks imports - v0.5.0
 use ark_bls12_381::{Bls12_381, Fr};
 use ark_ff::{One, Zero};
