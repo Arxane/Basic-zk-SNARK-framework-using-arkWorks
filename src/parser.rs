@@ -1,4 +1,3 @@
-//No AI assistance was used to write this parser file(unlike main.rs)
 use std::fs; //for reading the file
 use std::collections::HashMap; //for storing inputs and outputs
 use crate::{Gate, Circuit}; 
