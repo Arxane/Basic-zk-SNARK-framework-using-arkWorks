@@ -1,5 +1,3 @@
-// This implementation was developed with assistance from AI assistance
-
 use std::collections::HashMap;
 use zk_framework::{Circuit, ProvingKey, VerifyingKey, parse_circuit, setup, prove, verify};
 use ark_bls12_381::Fr;
