@@ -1,4 +1,3 @@
-// No AI assistance used for this implementation (unlike the main.rs file)
 use std::collections::HashMap;
 use std::ops::Neg;
 // Arkworks imports - v0.5.0
