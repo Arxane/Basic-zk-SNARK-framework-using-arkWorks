@@ -145,8 +145,8 @@ The framework is built on top of [ArkWorks](https://github.com/arkworks-rs), a R
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/zk-framework.git
-cd zk-framework
+git clone https://github.com/Arxane/Basic-zk-SNARK-framework-using-arkWorks.git
+cd Basic-zk-SNARK-framework-using-arkWorks
 ```
 
 2. Build the project:
